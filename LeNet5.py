@@ -71,7 +71,7 @@ for epoch in range(100):
             print('Epoch : %d   ||  step = %d   || loss = %f   || train_acc = %f' % (epoch,step,loss.data[0],train_acc))
         
         if step % 100 == 0:
-            #model.eval()
+            model.eval()
             test_loss = 0
             test_acc = 0
             for test_x,test_y in test_loader:
