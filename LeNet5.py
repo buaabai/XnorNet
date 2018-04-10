@@ -58,7 +58,7 @@ loss_fn = nn.CrossEntropyLoss()
 loss_fn_test = nn.CrossEntropyLoss(size_average=False)
 loss_fn_test.cuda()
 
-for epoch in range(10):
+for epoch in range(100):
     for step,(batch_x,batch_y) in enumerate(train_loader):
         batch_x,batch_y = batch_x.cuda(),batch_y.cuda()
         x = Variable(batch_x)
