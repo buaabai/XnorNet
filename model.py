@@ -46,7 +46,7 @@ class BinConv2d(nn.Module):
         #block structure is BatchNorm -> BinActiv -> BinConv -> Relu
         x = self.bn(x)
         x,A = BinActive(x)
-        k = 1 / (self.kernel_size**2) * torch.ones(x.shape[0],1,self.kernel_size,self.kernel_size) #constrain kernel as square
+        k = torch.ones(x.shape[0],1,self.kernel_size,self.kernel_size).mul(1/(self.kernel_size**2)) #constrain kernel as square
         k = Variable(k)
         K = F.conv2d(A,k,bias=None,stride=self.stride,padding=self.padding,dilation=self.dilation)
         x = self.conv(x)
