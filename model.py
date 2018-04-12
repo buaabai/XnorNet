@@ -46,7 +46,7 @@ class BinConv2d(nn.Module):
         #block structure is BatchNorm -> BinActiv -> BinConv -> Relu
         x = self.bn(x)
         x,A = BinActive(x)
-        k = torch.ones(x.shape[0],1,self.kernel_size,self.kernel_size).mul(1/(self.kernel_size**2)) #constrain kernel as square
+        k = torch.ones(1,1,self.kernel_size,self.kernel_size).mul(1/(self.kernel_size**2)) #out_channels and in_channels are both 1.constrain kernel as square
         k = Variable(k.cuda())
         K = F.conv2d(A,k,bias=None,stride=self.stride,padding=self.padding,dilation=self.dilation)
         x = self.conv(x)
@@ -64,7 +64,9 @@ class LeNet5_Bin(nn.Module):
     def forward(self,x):
         x = self.conv1(x)
         x = F.max_pool2d(x,2)
+        print(x.shape)
         x = self.conv2(x)
+        print(x.shape)
         x = F.max_pool2d(x,2)
         x = x.view(-1,400)
         #fc layer still float
