@@ -10,9 +10,12 @@ class BinActiv(Function):
     @staticmethod
     def forward(ctx,input):
         ctx.save_for_backward(input)
-        mean = torch.mean(input.abs(),1,keepdim=True) #the shape of mnist data is (N,C,W,H)
         input = input.sign()
-        return input,mean #tensor
+        return input #tensor.Forward should has only one output, or there will be another grad
+    
+    @classmethod
+    def Mean(cls,input):
+        return torch.mean(input.abs(),1,keepdim=True) #the shape of mnist data is (N,C,W,H)
 
     @staticmethod
     def backward(ctx,grad_output): #grad_output is a Variable
@@ -45,7 +48,8 @@ class BinConv2d(nn.Module):
     def forward(self,x):
         #block structure is BatchNorm -> BinActiv -> BinConv -> Relu
         x = self.bn(x)
-        x,A = BinActive(x)
+        A = BinActiv().Mean(x)
+        x = BinActive(x)
         k = torch.ones(1,1,self.kernel_size,self.kernel_size).mul(1/(self.kernel_size**2)) #out_channels and in_channels are both 1.constrain kernel as square
         k = Variable(k.cuda())
         K = F.conv2d(A,k,bias=None,stride=self.stride,padding=self.padding,dilation=self.dilation)
@@ -64,9 +68,7 @@ class LeNet5_Bin(nn.Module):
     def forward(self,x):
         x = self.conv1(x)
         x = F.max_pool2d(x,2)
-        print(x.shape)
         x = self.conv2(x)
-        print(x.shape)
         x = F.max_pool2d(x,2)
         x = x.view(-1,400)
         #fc layer still float
