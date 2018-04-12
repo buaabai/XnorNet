@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Function
+from torch.autograd import Function,Variable
 import torch.nn.functional as F
 
 class BinActiv(Function):
@@ -8,7 +8,7 @@ class BinActiv(Function):
     Binarize the input activations and calculate the mean across channel dimension
     '''
     @staticmethod
-    def forward(ctx,input): #input has already converted to Tensor
+    def forward(ctx,input):
         ctx.save_for_backward(input)
         mean = torch.mean(input.abs(),1,keepdim=True) #the shape of mnist data is (N,C,W,H)
         input = input.sign()
@@ -21,6 +21,8 @@ class BinActiv(Function):
         grad_input[input.ge(1)] = 0
         grad_input[input.le(-1)] = 0
         return grad_input #Variable
+
+BinActive = BinActiv.apply
 
 class BinConv2d(nn.Module):
     def __init__(self,in_channels,out_channels,kernel_size,stride=1,padding=0,dilation=1,groups=1,bias=False):
@@ -40,13 +42,32 @@ class BinConv2d(nn.Module):
                             groups=groups,bias=bias)
         self.relu = nn.ReLU()
 
-        self.k = 1 / (kernel_size**2) * torch.ones(-1,1,kernel_size,kernel_size) #constrain kernel as square
-
     def forward(self,x):
+        #block structure is BatchNorm -> BinActiv -> BinConv -> Relu
         x = self.bn(x)
-        x,A = BinActiv()(x)
-
+        x,A = BinActive(x)
+        k = 1 / (self.kernel_size**2) * torch.ones(x.shape[0],1,self.kernel_size,self.kernel_size) #constrain kernel as square
+        k = Variable(k)
+        K = F.conv2d(A,k,bias=None,stride=self.stride,padding=self.padding,dilation=self.dilation)
+        x = self.conv(x)
+        x = x * K
+        x = self.relu(x)
         return x
 
-
-
+class LeNet5_Bin(nn.Module):
+    def __init__(self):
+        super(LeNet5_Bin,self).__init__()
+        self.conv1 = BinConv2d(1,6,kernel_size = 5)
+        self.conv2 = BinConv2d(6,16,kernel_size = 3)
+        self.fc1 = nn.Linear(400,50)
+        self.fc2 = nn.Linear(50,10)
+    def forward(self,x):
+        x = self.conv1(x)
+        x = F.max_pool2d(x,2)
+        x = self.conv2(x)
+        x = F.max_pool2d(x,2)
+        x = x.view(-1,400)
+        #fc layer still float
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
