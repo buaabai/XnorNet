@@ -54,3 +54,15 @@ class Binop:
             add = add.sum(3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n).expand(s)
             add = add.mul(weight.sign())
             self.target_modules[index].grad.data = alpha.add(add)
+
+def accuracy(output,target,topk=(1,)):
+    maxk = max(topk)
+    batch_size = target.size(0)
+    _,pred = output.float().topk(maxk,1)
+    pred = pred.t()
+    correct = pred.eq(target.view(1,-1).expand_as(pred))
+    res = []
+    for k in topk:
+        correct_k = correct[:k].view(-1).float().sum(0)
+        res.append(correct_k.mul_(100.0 / batch_size))
+    return res
