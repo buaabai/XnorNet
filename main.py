@@ -33,7 +33,7 @@ optimizer = optim.Adam(model.parameters())
 
 bin_op = util.Binop(model)
 
-def train(epoch)
+def train(epoch):
     model.train()
     for batch_idx,(data,target) in enumerate(train_loader):
         data,target = data.cuda(),target.cuda()
