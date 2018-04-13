@@ -36,6 +36,7 @@ class Binop:
                 alpha = self.target_modules[index].data.norm(1,3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n)
             elif len(s) == 2:
                 alpha = self.target_modules[index].data.norm(1,1,keepdim=True).div(n)
+            self.alpha_to_save = []
             self.alpha_to_save.append(alpha)
             self.bin_weights_to_save.append(self.target_modules[index].data.sign())
             self.target_modules[index].data.sign().mul(alpha.expand(s),out=self.target_modules[index].data)
