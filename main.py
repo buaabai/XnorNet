@@ -97,5 +97,6 @@ if __name__ == '__main__':
     for epoch in range(10):
         train(epoch)
         test()
+    bin_op.SaveBinWeights()
     save_model(model,best_acc)
     #torch.save(model.state_dict(),'model_params.pkl')
