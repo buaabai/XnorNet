@@ -24,7 +24,7 @@ class Binop:
     
     def SaveWeights(self):
         for index in range(self.num_of_params):
-            self.saved_params[index].copy_(self.weights_to_save[index])
+            self.saved_params[index].copy_(self.target_modules[index].data)
 
     def BinarizeWeights(self):
         for index in range(self.num_of_params):
@@ -39,8 +39,8 @@ class Binop:
     
     def Binarization(self):
         self.ClampWeights()
-        self.BinarizeWeights()
         self.SaveWeights()
+        self.BinarizeWeights()
     
     def Restore(self):
         for index in range(self.num_of_params):
