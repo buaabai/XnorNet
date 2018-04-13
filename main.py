@@ -7,6 +7,14 @@ import torch.nn.functional as F
 import model
 import util
 
+def save_model(model,acc):
+    print('==>>>Saving model ...')
+    state = {
+        'acc':acc,
+        'state_dict':model.state_dict() 
+    }
+    torch.save(state,'model_state.pkl')
+
 BATCH_SIZE = 100
 
 train_loader = torch.utils.data.DataLoader(
@@ -58,6 +66,7 @@ def train(epoch):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
 def test():
+    global best_acc = 0.0
     model.eval()
     test_loss = 0
     correct = 0
@@ -71,7 +80,12 @@ def test():
         pred = output.data.max(1,keepdim=True)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
     
+    bin_op.Restore()
+    
     acc = 100. * correct/len(test_loader.dataset)
+    if(acc > best_acc):
+        best_acc = acc
+
     test_loss /= len(test_loader)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
@@ -81,4 +95,5 @@ if __name__ == '__main__':
     for epoch in range(10):
         train(epoch)
         test()
+    save_model(model,best_acc)
     #torch.save(model.state_dict(),'model_params.pkl')
