@@ -57,7 +57,28 @@ def train(epoch):
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
+def test():
+    model.eval()
+    test_loss = 0
+    correct = 0
+
+    bin_op.Binarization()
+    for data,target in test_loader:
+        data,target = data.cuda(),target.cuda()
+        data,target = Variable(data,volatile=True),Variable(target)
+        output = model(data)
+        test_loss += criterion(output,target).data[0]
+        pred = output.data.max(1,keepdim=True)[1]
+        correct += pred.eq(target.data.view_as(pred)).cpu.sum()
+    
+    acc = 100. * correct/len(test_loader.dataset)
+    test_loss /= len(test_loader.dataset)
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
+
 if __name__ == '__main__':
     for epoch in range(10):
         train(epoch)
-    torch.save(model.state_dict(),'model_params.pkl')
+        test()
+    #torch.save(model.state_dict(),'model_params.pkl')
