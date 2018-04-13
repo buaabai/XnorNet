@@ -59,17 +59,18 @@ class BinConv2d(nn.Module):
         return x
 
 class BinLinear(nn.Module):
-     def __init__(self,in_features,out_features):
+    def __init__(self,in_features,out_features):
         super(BinLinear,self).__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.bn = nn.BatchNorm1d(in_features,eps=1e-4,momentum=0.1,affine=True)
         self.linear = nn.Linear(in_features,out_features,bias=False)
+
     def forward(self,x):
         x = self.bn(x)
         beta = BinActiv().Mean(x).expand_as(x)
         x = BinActive(x)
-        x = torch.(x,beta)
+        x = torch.mul(x,beta)
         x = self.linear(x)
         return x
 
