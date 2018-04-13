@@ -82,7 +82,7 @@ def test():
         pred = output.data.max(1,keepdim=True)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
     
-    #bin_op.Restore()
+    bin_op.Restore()
     
     acc = 100. * correct/len(test_loader.dataset)
     if(acc > best_acc):
@@ -94,9 +94,9 @@ def test():
         100. * correct / len(test_loader.dataset)))
 
 if __name__ == '__main__':
+    #torch.cuda.manual_seed(1)
     for epoch in range(10):
         train(epoch)
         test()
-    bin_op.SaveBinWeights()
+    bin_op.Binarization()
     save_model(model,best_acc)
-    bin_op.SaveAlpha()
