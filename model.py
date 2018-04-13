@@ -54,8 +54,23 @@ class BinConv2d(nn.Module):
         k = Variable(k.cuda())
         K = F.conv2d(A,k,bias=None,stride=self.stride,padding=self.padding,dilation=self.dilation)
         x = self.conv(x)
-        x = x * K
+        x = torch.mul(x,K)
         x = self.relu(x)
+        return x
+
+class BinLinear(nn.Module):
+     def __init__(self,in_features,out_features):
+        super(BinLinear,self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.bn = nn.BatchNorm1d(in_features,eps=1e-4,momentum=0.1,affine=True)
+        self.linear = nn.Linear(in_features,out_features,bias=False)
+    def forward(self,x):
+        x = self.bn(x)
+        beta = BinActiv().Mean(x).expand_as(x)
+        x = BinActive(x)
+        x = torch.(x,beta)
+        x = self.linear(x)
         return x
 
 class LeNet5_Bin(nn.Module):
@@ -63,15 +78,14 @@ class LeNet5_Bin(nn.Module):
         super(LeNet5_Bin,self).__init__()
         self.conv1 = BinConv2d(1,6,kernel_size = 5)
         self.conv2 = BinConv2d(6,16,kernel_size = 3)
-        self.fc1 = nn.Linear(400,50)
-        self.fc2 = nn.Linear(50,10)
+        self.fc1 = BinLinear(400,50)
+        self.fc2 = BinLinear(50,10)
     def forward(self,x):
         x = self.conv1(x)
         x = F.max_pool2d(x,2)
         x = self.conv2(x)
         x = F.max_pool2d(x,2)
         x = x.view(-1,400)
-        #fc layer still float
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
