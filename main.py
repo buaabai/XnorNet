@@ -99,4 +99,4 @@ if __name__ == '__main__':
         test()
     bin_op.SaveBinWeights()
     save_model(model,best_acc)
-    #torch.save(model.state_dict(),'model_params.pkl')
+    bin_op.SaveAlpha()
