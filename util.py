@@ -5,14 +5,14 @@ class Binop:
     def __init__(self,model):
         count_targets = 0
         for m in model.modules():
-            if isinstance(m,nn.Conv2d):
+            if isinstance(m,nn.Conv2d) or isinstance(m,nn.Linear):
                 count_targets += 1
         self.bin_range = np.linspace(0,count_targets-1,count_targets).astype('int').tolist()
         self.num_of_params = len(self.bin_range)
         self.saved_params = []
         self.target_modules = []
         for m in model.modules():
-            if isinstance(m,nn.Conv2d):
+            if isinstance(m,nn.Conv2d) or isinstance(m,nn.Linear):
                 tmp = m.weight.data.clone()
                 self.saved_params.append(tmp) #tensor
                 self.target_modules.append(m.weight) #Parameter
@@ -29,7 +29,10 @@ class Binop:
         for index in range(self.num_of_params):
             n = self.target_modules[index].data[0].nelement()
             s = self.target_modules[index].data.size()
-            alpha = self.target_modules[index].data.norm(1,3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n)
+            if len(s) == 4:
+                alpha = self.target_modules[index].data.norm(1,3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n)
+            elif len(s) == 2:
+                alpha = self.target_modules[index].data.norm(1,1,keepdim=True).div(n)
             self.target_modules[index].data.sign().mul(alpha.expand(s),out=self.target_modules[index].data)
     
     def Binarization(self):
@@ -46,12 +49,18 @@ class Binop:
             weight = self.target_modules[index].data
             n = weight[0].nelement()
             s = weight.size()
-            alpha = weight.norm(1,3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n).expand(s)
+            if len(s) == 4:
+                alpha = weight.norm(1,3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n).expand(s)
+            elif len(s) == 2:
+                alpha = weight.norm(1,1,keepdim=True).div(n).expand(s)
             alpha[weight.le(-1.0)] = 0
             alpha[weight.ge(1.0)] = 0
             alpha = alpha.mul(self.target_modules[index].grad.data)
             add = weight.sign().mul(self.target_modules[index].grad.data)
-            add = add.sum(3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n).expand(s)
+            if len(s) == 4:
+                add = add.sum(3,keepdim=True).sum(2,keepdim=True).sum(1,keepdim=True).div(n).expand(s)
+            elif len(s) == 2:
+                add = add.sum(1,keepdim=True).div(n).expand(s)
             add = add.mul(weight.sign())
             self.target_modules[index].grad.data = alpha.add(add)
 
