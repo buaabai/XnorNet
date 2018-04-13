@@ -69,7 +69,7 @@ def test():
         output = model(data)
         test_loss += criterion(output,target).data[0]
         pred = output.data.max(1,keepdim=True)[1]
-        correct += pred.eq(target.data.view_as(pred)).cpu.sum()
+        correct += pred.eq(target.data.view_as(pred)).cpu().sum()
     
     acc = 100. * correct/len(test_loader.dataset)
     test_loss /= len(test_loader.dataset)
