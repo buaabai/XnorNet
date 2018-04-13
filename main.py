@@ -66,7 +66,8 @@ def train(epoch):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
 def test():
-    global best_acc = 0.0
+    global best_acc
+    best_acc = 0.0
     model.eval()
     test_loss = 0
     correct = 0
