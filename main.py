@@ -14,6 +14,7 @@ def save_model(model,acc):
         'state_dict':model.state_dict() 
     }
     torch.save(state,'model_state.pkl')
+    print('*** DONE! ***')
 
 BATCH_SIZE = 100
 
