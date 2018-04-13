@@ -37,8 +37,8 @@ class Binop:
     
     def Binarization(self):
         self.ClampWeights()
-        self.SaveWeights()
         self.BinarizeWeights()
+        self.SaveWeights()
     
     def Restore(self):
         for index in range(self.num_of_params):
