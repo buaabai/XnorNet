@@ -82,7 +82,7 @@ def test():
         pred = output.data.max(1,keepdim=True)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
     
-    bin_op.Restore()
+    #bin_op.Restore()
     
     acc = 100. * correct/len(test_loader.dataset)
     if(acc > best_acc):
