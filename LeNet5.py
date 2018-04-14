@@ -11,7 +11,7 @@ import os
 import matplotlib.pyplot as plt
 
 BATCH_SIZE = 100
-learning_rate = 0.001
+learning_rate = 0.0001
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST('./mnist_data', train=True, download=False,
@@ -62,7 +62,7 @@ loss_fn = nn.CrossEntropyLoss()
 loss_fn_test = nn.CrossEntropyLoss(size_average=False)
 loss_fn_test.cuda()
 
-for epoch in range(100):
+for epoch in range(1000):
     for step,(batch_x,batch_y) in enumerate(train_loader):
         batch_x,batch_y = batch_x.cuda(),batch_y.cuda()
         x = Variable(batch_x)
