@@ -18,7 +18,7 @@ def save_model(model,acc):
 
 BATCH_SIZE = 100
 learning_rate = 1e-4
-weight_decay = 0.001
+weight_decay = 0.0001
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST('./mnist_data', train=True, download=False,
