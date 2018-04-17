@@ -6,6 +6,31 @@ from torchvision import datasets, transforms
 import torch.nn.functional as F
 import model
 import util
+import argparse
+
+def parse():
+    parser = argparse.ArgumentParser(description='XnorNet Pytorch MNIST Example.')
+    parser.add_argument('--batch-size',type=int,default=100,metavar='N',
+                        help='batch size for training(default: 100)')
+    parser.add_argument('--test-batch-size',type=int,default=100,metavar='N',
+                        help='batch size for testing(default: 100)')
+    parser.add_argument('--epochs',type=int,default=100,metavar='N',
+                        help='number of epoch to train(default: 100)')
+    parser.add_argument('--lr-epochs',type=int,default=20,metavar='N',
+                        help='number of epochs to decay learning rate(default: 20)')
+    parser.add_argument('--lr',type=float,default=1e-3,metavar='LR',
+                        help='learning rate(default: 1e-3)')
+    parser.add_argument('--momentum',type=float,default=0.9,metavar='M',
+                        help='SGD momentum(default: 0.9)')
+    parser.add_argument('--weight-decay','--wd',type=float,default=1e-5,metavar='WD',
+                        help='weight decay(default: 1e-5)')
+    parser.add_argument('--no-cuda',action='store_true',default=False,
+                        help='disable CUDA training')
+    parser.add_argument('--seed',type=int,default=1,mevatar='S',
+                        help='random seed(default: 1)')
+    
+    args = parser.parse_args()
+    args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 def save_model(model,acc):
     print('==>>>Saving model ...')
