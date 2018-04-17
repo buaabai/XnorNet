@@ -42,6 +42,8 @@ def save_model(model,acc):
     print('*** DONE! ***')
 
 BATCH_SIZE = 100
+learning_rate = 1e-4
+weight_decay = 0.0001
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST('./mnist_data', train=True, download=False,
@@ -63,7 +65,7 @@ model.cuda()
 
 criterion = nn.CrossEntropyLoss()
 criterion.cuda()
-optimizer = optim.Adam(model.parameters())
+optimizer = optim.Adam(model.parameters(),lr=learning_rate,weight_decay=weight_decay)
 
 bin_op = util.Binop(model)
 
@@ -117,10 +119,17 @@ def test():
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    
+def adjust_learning_rate(optimizer,epoch,lr_epoch):
+    lr = learning_rate * (0.1 ** (epoch // lr_epoch))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+        return lr
 
 if __name__ == '__main__':
     #torch.cuda.manual_seed(1)
-    for epoch in range(10):
+    for epoch in range(1000):
+        adjust_learning_rate(optimizer,epoch,50)
         train(epoch)
         test()
     bin_op.Binarization()
