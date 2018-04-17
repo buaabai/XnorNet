@@ -8,7 +8,7 @@ import model
 import util
 import argparse
 
-def parse():
+def ParseArgs():
     parser = argparse.ArgumentParser(description='XnorNet Pytorch MNIST Example.')
     parser.add_argument('--batch-size',type=int,default=100,metavar='N',
                         help='batch size for training(default: 100)')
@@ -31,6 +31,15 @@ def parse():
     
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
+    return args
+
+def main():
+    args = ParseArgs()
+    if args.cuda:
+        torch.cuda.manual_seed(args.seed)
+    BATCH_SIZE = args.batch_size
+    TEST_BATCH_SIZE = args.test_batch_size
+
 
 def save_model(model,acc):
     print('==>>>Saving model ...')
