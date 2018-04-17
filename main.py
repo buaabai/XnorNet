@@ -37,9 +37,31 @@ def main():
     args = ParseArgs()
     if args.cuda:
         torch.cuda.manual_seed(args.seed)
+    kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
     BATCH_SIZE = args.batch_size
     TEST_BATCH_SIZE = args.test_batch_size
 
+    ###################################################################
+    ##             Load Train Dataset                                ##
+    ###################################################################
+    train_loader = torch.utils.data.DataLoader(
+    datasets.MNIST('./mnist_data', train=True, download=False,
+                   transform=transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.1307,), (0.3081,))
+                   ])),
+    batch_size=BATCH_SIZE, shuffle=True,**kwargs)
+    ###################################################################
+    ##             Load Test Dataset                                ##
+    ###################################################################
+    test_loader = torch.utils.data.DataLoader(
+    datasets.MNIST('./mnist_data', train=False, download=False,
+                    transform=transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.1307,), (0.3081,))
+                   ])),
+    batch_size=TEST_BATCH_SIZE, shuffle=True,**kwargs)
+    
 
 def save_model(model,acc):
     print('==>>>Saving model ...')
@@ -50,24 +72,9 @@ def save_model(model,acc):
     torch.save(state,'model_state.pkl')
     print('*** DONE! ***')
 
-BATCH_SIZE = 100
 learning_rate = 1e-4
 weight_decay = 0.0001
 
-train_loader = torch.utils.data.DataLoader(
-    datasets.MNIST('./mnist_data', train=True, download=False,
-                   transform=transforms.Compose([
-                       transforms.ToTensor(),
-                       transforms.Normalize((0.1307,), (0.3081,))
-                   ])),
-    batch_size=BATCH_SIZE, shuffle=True)
-test_loader = torch.utils.data.DataLoader(
-    datasets.MNIST('./mnist_data', train=False, download=False,
-                    transform=transforms.Compose([
-                       transforms.ToTensor(),
-                       transforms.Normalize((0.1307,), (0.3081,))
-                   ])),
-    batch_size=BATCH_SIZE, shuffle=True)
 
 model = model.LeNet5_Bin()
 model.cuda()
