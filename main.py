@@ -80,7 +80,7 @@ def main():
     for epoch_index in range(1,args.epochs+1):
         adjust_learning_rate(learning_rate,optimizer,epoch_index,args.lr_epochs)
         train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op)
-        test(args,test_loader,bin_op,criterion)
+        test(model,test_loader,bin_op,criterion)
     bin_op.Binarization()
     save_model(model,best_acc)
     
