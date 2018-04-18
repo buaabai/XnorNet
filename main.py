@@ -77,6 +77,7 @@ def main():
     optimizer = optim.Adam(model.parameters(),lr=learning_rate,weight_decay=weight_decay)
     bin_op = util.Binop(model)
 
+    best_acc = 0.0
     for epoch_index in range(1,args.epochs+1):
         adjust_learning_rate(learning_rate,optimizer,epoch_index,args.lr_epochs)
         train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op)
@@ -120,7 +121,6 @@ def train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op):
 
 def test(model,test_loader,bin_op,criterion):
     global best_acc
-    best_acc = 0.0
     model.eval()
     test_loss = 0
     correct = 0
