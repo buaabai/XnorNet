@@ -19,13 +19,13 @@ In the paper, the gradient in backward after the scaled sign function is inaccur
 * `model.py`
 This file contains four classes, BinAvtiv, BinConv2d, BinLinear and LeNet5_Bin. BinActiv is used to compute the binary activations and alpha and as a module in BinConv2d and BinLinear. LeNet5_Bin is composed of BinConv2d and BinLinear.And only the activations is binarized now.
 * `utils.py`
-This file contains binarized operation and update operation for both convolution layer and linear layer on weights. The binarized operation includes clamp, save and binarize(the clamp operation refers to [this papet](https://arxiv.org/pdf/1602.02830.pdf)). The update operation computes the gradients from binarized weights.
+This file contains binarized operation and update operation for both convolution layer and linear layer on weights. The binarized operation includes clamp, save and binarize(the clamp operation refers to [this paper](https://arxiv.org/pdf/1602.02830.pdf)). The update operation computes the gradients from binarized weights.
 * `main.py`
 This file is the main function, which includes training, testing and saving the best model. When we are training the network, firstly, we binarize the weights of the model, secondly we use the model with binarized activations and weights, and then we call the backward of loss, lastly we update the weights in binary way.
 ## Reference
-* https://github.com/jiecaoyu/XNOR-Net-PyTorch
-* https://github.com/itayhubara/BinaryNet.pytorch
-* https://github.com/MatthieuCourbariaux/BinaryNet
-* https://github.com/MatthieuCourbariaux/BinaryConnect
+* [jiecaoyu/XNOR-Net-PyTorch](https://github.com/jiecaoyu/XNOR-Net-PyTorch)
+* [itayhubara/BinaryNet.pytorch](https://github.com/itayhubara/BinaryNet.pytorch)
+* [MatthieuCourbariaux/BinaryNet](https://github.com/MatthieuCourbariaux/BinaryNet)
+* [MatthieuCourbariaux/BinaryConnect](https://github.com/MatthieuCourbariaux/BinaryConnect)
 
 	
