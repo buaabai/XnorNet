@@ -84,7 +84,6 @@ def main():
     bin_op.Binarization()
     save_model(model,best_acc)
     
-
 def save_model(model,acc):
     print('==>>>Saving model ...')
     state = {
@@ -93,7 +92,6 @@ def save_model(model,acc):
     }
     torch.save(state,'model_state.pkl')
     print('*** DONE! ***')
-
 
 def train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op):
     model.train()
