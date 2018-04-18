@@ -26,7 +26,7 @@ def ParseArgs():
                         help='weight decay(default: 1e-5)')
     parser.add_argument('--no-cuda',action='store_true',default=False,
                         help='disable CUDA training')
-    parser.add_argument('--seed',type=int,default=1,mevatar='S',
+    parser.add_argument('--seed',type=int,default=1,metavar='S',
                         help='random seed(default: 1)')
     parser.add_argument('--log-interval',type=int,default=100,mevatat='N',
                         help='how many batches to wait before logging training status')
