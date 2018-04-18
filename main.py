@@ -77,11 +77,13 @@ def main():
     optimizer = optim.Adam(model.parameters(),lr=learning_rate,weight_decay=weight_decay)
     bin_op = util.Binop(model)
 
-    best_acc = 0.0
+    best_acc = 0.0 
     for epoch_index in range(1,args.epochs+1):
         adjust_learning_rate(learning_rate,optimizer,epoch_index,args.lr_epochs)
         train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op)
-        test(model,test_loader,bin_op,criterion)
+        acc = test(model,test_loader,bin_op,criterion)
+        if acc > best_acc:
+            best_acc = acc
     bin_op.Binarization()
     save_model(model,best_acc)
  
@@ -120,7 +122,6 @@ def train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
 def test(model,test_loader,bin_op,criterion):
-    nonlocal best_acc
     model.eval()
     test_loss = 0
     correct = 0
@@ -137,13 +138,13 @@ def test(model,test_loader,bin_op,criterion):
     bin_op.Restore()
     
     acc = 100. * correct/len(test_loader.dataset)
-    if(acc > best_acc):
-        best_acc = acc
 
     test_loss /= len(test_loader)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    
+    return acc
     
 def adjust_learning_rate(learning_rate,optimizer,epoch_index,lr_epoch):
     lr = learning_rate * (0.1 ** (epoch_index // lr_epoch))
