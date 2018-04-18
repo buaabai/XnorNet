@@ -84,8 +84,9 @@ def main():
         acc = test(model,test_loader,bin_op,criterion)
         if acc > best_acc:
             best_acc = acc
-    bin_op.Binarization()
-    save_model(model,best_acc)
+            bin_op.Binarization()
+            save_model(model,best_acc)
+            bin_op.Restore()
  
 def save_model(model,acc):
     print('==>>>Saving model ...')
