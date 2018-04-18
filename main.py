@@ -84,7 +84,7 @@ def main():
         test(model,test_loader,bin_op,criterion)
     bin_op.Binarization()
     save_model(model,best_acc)
-    
+ 
 def save_model(model,acc):
     print('==>>>Saving model ...')
     state = {
@@ -120,7 +120,7 @@ def train(args,epoch_index,train_loader,model,optimizer,criterion,bin_op):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 
 def test(model,test_loader,bin_op,criterion):
-    global best_acc
+    nonlocal best_acc
     model.eval()
     test_loss = 0
     correct = 0
